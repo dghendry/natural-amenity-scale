@@ -8,6 +8,5 @@ Autumn, 2019
 See [Report list](https://dghendry.github.io/natural-amenity-scale/).
 
 <hr><\hr>
-GitHub Repository Name: `natural-amenity-scale`
- 
+GitHub Repository Name: https://github.com/dghendry/natural-amenity-scale<br>
 URL: https://dghendry.github.io/natural-amenity-scale/

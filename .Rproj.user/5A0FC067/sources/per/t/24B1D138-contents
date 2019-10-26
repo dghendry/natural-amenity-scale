@@ -1,0 +1,204 @@
+# A4 Data Wrangling
+
+# Loading and Exploring Data -------------------------------- (**28 points**)
+
+# To begin, you'll need to download the Kickstarter Projects data from the
+# Kaggle website: https://www.kaggle.com/kemical/kickstarter-projects
+# Download the `ks-projects-201801.csv` file into a new folder called `data/`
+
+# Load the `dplyr` package
+library(dplyr)
+
+# Load your data, making sure to not interpret strings as factors
+projects <- read.csv("data/ks-projects.csv", stringsAsFactors = F)
+
+# To start, write the code to get some basic information about the dataframe:
+# - What are the column names?
+colnames(projects)
+
+# - How many rows is the data frame?
+nrow(projects)
+
+# - How many columns are in the data frame?
+ncol(projects)
+
+# Use the `summary` function to get some summary information
+summary(projects)
+
+# Unfortunately, this doesn't give us a great set of insights. Let's write a
+# few functions to try and do this better.
+# First, let's write a function `get_col_info()` that takes as parameters a
+# column name and a dataframe. If the values in the column are *numeric*,
+# the function should return a list with the keys:
+# - `min`: the minimum value of the column
+# - `max`: the maximum value of the column
+# - `mean`: the mean value of the column
+# If the column is *not* numeric and there are fewer than 10 unique values in
+# the column, you should return a list with the keys:
+# - `n_values`: the number of unique values in the column
+# - `unique_values`: a vector of each unique value in the column
+# If the column is *not* numeric and there are 10 or *more* unique values in
+# the column, you should return a list with the keys:
+# - `n_values`: the number of unique values in the column
+# - `sample_values`: a vector containing a random sample of 10 column values
+# Hint: use `typeof()` to determine the column type
+
+get_col_info <- function(colname, df) {
+  # Get values
+  values <- df %>% pull(colname)
+
+  # Use typeof to determine numeric or not
+  if (typeof(values) == "double") {
+    info <- list(
+      min = min(values, na.rm = T),
+      mean = mean(values, na.rm = T),
+      max = max(values, na.rm = T)
+    )
+  } else if (length(unique(values)) > 10) {
+    info <- list(
+      n_values = length(unique(values)),
+      sample_values = sample(unique(values), 10)
+    )
+  } else {
+    info <- list(
+      n_values = length(unique(values)),
+      unique_values = unique(values)
+    )
+  }
+  info
+}
+
+# Demonstrate that your function works by passing a column name of your choice
+# and the kickstarter data to your function. Store the result in a variable
+# with a meaningful name
+goal_info <- get_col_info("goal", projects)
+
+
+# To take this one step further, write a function `get_summary_info()`,
+# that takes in a data frame  and returns a *list* of information for each
+# column (where the *keys* of the returned list are the column names, and the
+# _values_ are the summary information returned by the `get_col_info()` function
+# The suggested approach is to use the appropriate `*apply` method to
+# do this, though you can write a loop
+get_summary_info <- function(df) {
+  # Get colum names
+  cols <- colnames(df)
+
+  # Apply function to each column
+  sapply(cols, get_col_info, df)
+}
+
+# Demonstrate that your function works by passing the kickstarter data
+# into it and saving the result in a variable
+project_info <- get_summary_info(projects)
+
+# Take note of 3 observations that you find interesting from this summary
+# information (and/or questions that arise that want to investigate further)
+# YOUR COMMENTS HERE
+# LIKELY ON MULTIPLE LINES
+
+# Asking questions of the data ----------------------------- (**29 points**)
+
+# Write the appropriate dplyr code to answer each one of the following questions
+# Make sure to return (only) the desired value of interest (e.g., use `pull()`)
+# Store the result of each question in a variable with a clear + expressive name
+# If there are multiple observations that meet each condition, the results
+# can be in a vector. Make sure to *handle NA values* throughout!
+# You should answer each question using a single statement with multiple pipe
+# operations!
+
+# What was the name of the project(s) with the highest goal?
+highest_goal_name <- projects %>%
+  filter(goal == max(goal)) %>%
+  pull(name)
+
+# What was the category of the project(s) with the lowest goal?
+lowest_goal_category <- projects %>%
+  filter(goal == min(goal)) %>%
+  pull(category)
+
+# How many projects had a deadline in 2018?
+projects_2018 <- projects %>%
+  filter(format(as.Date(deadline), "%Y") == "2018") %>%
+  nrow()
+
+# What proportion or projects weren't successful? Your result can be a decimal
+pct_unsuccessful <- projects %>%
+  filter(state != "successful") %>%
+  nrow() / nrow(projects)
+
+# What was the amount pledged for the project with the most backers?
+most_backer_pledge <- projects %>%
+  filter(backers == max(backers)) %>%
+  pull(pledged)
+
+
+# Of all of the projects that *failed*, what was the name of the project with
+# the highest amount of money pledged?
+most_pledged_of_failed <- projects %>%
+  filter(state == "failed") %>%
+  filter(pledged == max(pledged)) %>%
+  pull(name)
+
+
+# How much total money was pledged to projects that weren't successful?
+total_failed_pledged <- projects %>%
+  filter(state != "successful") %>%
+  summarize(total = sum(pledged)) %>%
+  pull(total)
+# Performing analysis by *grouped* observations ----------------- (38 Points)
+
+# Which category had the most money pledged (total)?
+most_pledged_category <- projects %>%
+  group_by(category) %>%
+  summarise(pledged = sum(pledged)) %>%
+  filter(pledged == max(pledged)) %>%
+  pull(category)
+
+# Which country had the most backers?
+country_with_most_backers <- projects %>%
+  group_by(country) %>%
+  summarise(backers = sum(backers)) %>%
+  filter(backers == max(backers)) %>%
+  pull(category)
+
+# Which year had the most money pledged (hint: you may have to create a new
+# column)?
+most_money_year <- projects %>%
+  mutate(year = format(as.Date(deadline), "%Y")) %>%
+  group_by(year) %>%
+  summarise(pledged = sum(pledged)) %>%
+  filter(pledged == max(pledged)) %>%
+  pull(year)
+
+
+# What were the top 3 main categories in 2018 (as ranked by number of backers)?
+top_main_categories_2018 <- projects %>%
+  mutate(year = format(as.Date(deadline), "%Y")) %>%
+  group_by(main_category) %>%
+  summarise(backers = sum(backers)) %>%
+  top_n(3, wt = backers) %>%
+  pull(main_category)
+
+# What was the most common day of the week on which to launch a project?
+# (return the name of the day, e.g. "Sunday", "Monday"....)
+most_common_day <- projects %>%
+  mutate(day = weekdays(as.Date(launched))) %>%
+  group_by(day) %>%
+  summarize(n = n()) %>%
+  filter(n == max(n)) %>%
+  pull(day)
+
+# What was the least successful day on which to launch a project? In other
+# words, which day had the lowest success rate (lowest proportion of projects
+# that were successful)? This might require some creative problem solving....
+least_successful_day <- projects %>%
+  mutate(day = weekdays(as.Date(launched))) %>%
+  group_by(day) %>%
+  summarize(
+    total_projects = n(),
+    successful_projects = sum(state == "successful"),
+    prop_successful = successful_projects / total_projects
+  ) %>%
+  filter(prop_successful == min(prop_successful)) %>%
+  pull(day)

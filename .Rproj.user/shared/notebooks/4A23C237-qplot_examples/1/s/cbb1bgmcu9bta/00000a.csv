@@ -1,0 +1,6 @@
+"0","num <- nrow(df)"
+"0","t <- paste0(""Distribution of Natural Amenity Scale Rankings (N="",num,"")."")"
+"0","p <- p + labs(title=t, "
+"0","     x = ""Rank (1-low, 7-high)"", "
+"0","     y = ""Frequency"")"
+"0","print(p)"

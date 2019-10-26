@@ -1,0 +1,5 @@
+"0","p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=factor(Natural.Amenity.Rank), alpha=0.25, geom=c(""point"", ""smooth""))"
+"0","p <- p + labs(title=""Natural Amenity Scale"", "
+"0","     x = ""Mean Temperature in January (Farienheit)"", "
+"0","     y = ""Mean Temperature in July (Farienheit)"")"
+"0","print(p)"

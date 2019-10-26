@@ -1,0 +1,2 @@
+"0","df <- create_natural_amenity_scale_df()"
+"0","head(df)"

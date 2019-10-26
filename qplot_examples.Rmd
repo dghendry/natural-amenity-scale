@@ -1,0 +1,85 @@
+---
+title: "Natural Amenity Scale Ranking"
+output:
+  html_document:
+    df_print: paged
+---
+This report shows some visualizations of the Natural Amenity Scale. 
+
+```{r message=FALSE, echo=FALSE}
+library(ggplot2)
+setwd("~/Documents/__INFO-201/12code/nas")
+source("./source/data_wrangling.R")
+```
+
+### The Data Set 
+Recall that the data is organized in a table with a ranking assigned to each county in the U.S.A.
+
+```{r echo=FALSE}
+df <- create_natural_amenity_scale_df()
+head(df)
+```
+
+### Question: What is the Distribution of Ranking Scores?
+
+We can answer this question with a histogram.
+
+```{r echo= FALSE, message=FALSE}
+p <- qplot(data=df, x=Natural.Amenity.Rank)
+print(p)
+```
+
+This is the call to qplot(). That's it! 
+
+```{r eval=FALSE, echo= TRUE, message=FALSE}
+qplot(data=df, x=Natural.Amenity.Rank)
+```
+
+We can add titles and labels to the graph, with this code.
+
+```{r message=FALSE}
+num <- nrow(df)
+t <- paste0("Distribution of Natural Amenity Scale Rankings (N=",num,").")
+p <- p + labs(title=t, 
+     x = "Rank (1-low, 7-high)", 
+     y = "Frequency")
+print(p)
+```
+
+### Question: How are July and January Mean Temperatures Related?
+
+We can answer this question with a scatterplot. Here's the code:
+
+```{r message=FALSE}
+p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=Natural.Amenity.Rank)
+p <- p + labs(title="Natural Amenity Scale", 
+     x = "Mean Temperature in January (Farienheit)", 
+     y = "Mean Temperature in July (Farienheit)")
+print(p)
+```
+
+### Question: Can we Discern Trends in this Data
+
+This code can be used to create trend lines. Are there trends? 
+
+```{r echo=FALSE, message=FALSE}
+p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=factor(Natural.Amenity.Rank), alpha=0.25, geom=c("point", "smooth"))
+p <- p + labs(title="Natural Amenity Scale", 
+     x = "Mean Temperature in January (Farienheit)", 
+     y = "Mean Temperature in July (Farienheit)")
+print(p)
+```
+
+Here is the code:
+
+```{r eval= FALSE, echo=FALSE, message=FALSE}
+p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=factor(Natural.Amenity.Rank), alpha=0.25, geom=c("point", "smooth"))
+p <- p + labs(title="Natural Amenity Scale", 
+     x = "Mean Temperature in January (Farienheit)", 
+     y = "Mean Temperature in July (Farienheit)")
+print(p)
+```
+
+### Summary
+
+qplot() is extremely effective for drawing standard charts. See the [reference guide](https://ggplot2.tidyverse.org/reference/qplot.html#arguments).

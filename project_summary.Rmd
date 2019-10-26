@@ -1,0 +1,288 @@
+---
+title: 'Natural Amenity Scale: Project Report'
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+```{r echo=FALSE, message=FALSE}
+library(ggplot2)
+# Set the working directory
+setwd("~/Documents/__INFO-201/12code/nas")
+
+# Source these R files (note directory location)
+source("./source/data_wrangling.R")
+source("./source/viz.R")
+
+# Create two data frame, to be used below in the report
+na_df          <- create_natural_amenity_scale_df()
+wa_map_info_df <- get_map_data_for_county("WA")
+```
+The goal of this report is to summarize work on presenting the [Natural Amenity Scale](https://www.ers.usda.gov/data-products/natural-amenities-scale/). 
+
+Recall the Natural Amenity Scale, ranging from 1 (low) to 7 (high), is a measure of the "beauty" of region. All counties in the USA have been assigned a rank on this 7-point scale.
+
+### Data Wrangling: The Natural Amenity Data Set
+Recall that the data is arranged in a table. Here are the headings and the first few oberviations. We'll call this the **natural_amenity** table.
+
+```{r echo=FALSE, message=FALSE}
+head(na_df)
+```
+#### Summary of columns
+* **FIPS.Code** - Unique, common identify for a US county (nominal)
+* **STATE** - The two-letter code for US states (nominal) 
+* **County** - The name of the county (nominal)
+* **County** - The name of the county (nominal)
+* **Census.Division** - A grouping of states (ordinal, 1-9). Each of the nine divisions represent relatively homogenous regions. 
+  * Division 1: New England Division: Maine, Vermont, New Hampshire, Massachusetts, Connecticut, Rhode Island
+  * Division 2: Middle Atlantic Division: New Jersey, New York, Pennsylvania
+  * Division 5: South Atlantic Division: Maryland, Delaware, West Virginia, Virginia, North Carolina, South Carolina, Georgia, Florida, District of Columbia
+  * Division 6: East South Central Division: Kentucky, Tennessee, Alabama, Mississippi
+  * Division 7: West South Central Division: Oklahoma, Arkansas, Texas, Louisiana
+  * Division 3: East North Central Division: Wisconsin, Michigan, Ohio, Indiana, Illinois
+  * Division 4: West North Central Division: North Dakota, South Dakota, Nebraska, Kansas, Missouri, Iowa, Minnesota
+  * Division 8: Mountain Division: Idaho, Montana, Wyoming, Colorado, Utah, Nevada, Arizona, New Mexico
+  * Division 9: Pacific Division: Washington, Oregon, California, Alaska, Hawaii
+* **Rual.Urban.Continuum** - A measure of how "rural" or "urban" a county is (ordinal, range 1 [urban] to 9 [rural]) 
+* **...** - Other physical feature of a region that go into the computing the Natural.Amenity.Rank
+* **Natural.Amenity.Rank** The rank of the county (ordinal: 1 [low beauty] to 7 [high beauty] )
+
+### Mapping Data 
+To present the Natural Amenity Scale on a map we need data that represents the United States and all the counties in the US. Fortunately, we have this data. Below is a sample. Look at it carefully. 
+
+Each row refers to a specific point in the **region**, Washington State, and **sub-region**, Adams County. The specific point is defined by a longnitude-latitude coordinate (_long_-_lat_). 
+
+When we join all these points together with lines, a polygon is displayed. That polygon is the shape of the county. The group column indicates all the long-lat points that are in the polygon for a **region** and **subregion**. 
+
+The final very important column is **order**, which specifies the order for drawing the lines: 1 to 2, 2 to 3, and so forth, onto N-1 to N, and, finally, N to 1.
+
+This relatively simple data structure allows us to draw every County in the US. We'll call this table the ***map*** table (Credit: [maps package](https://cran.r-project.org/web/packages/maps/maps.pdf))
+
+```{r echo=FALSE, message=FALSE}
+wa_map_info_df <- get_map_data_for_county("WA") 
+head(wa_map_info_df,22)
+```
+
+#### Example: Adams County
+Here is what Adams County, WA looks like. Each longnitude-latitude position is shown as a red point. Each of the points are connected by a dotted line. When all of the lines are joined, the result is polygon, which is filled with a grey color. (Changing the appearance of the points, lines, and fill color of the polygon is easy.)
+
+```{r echo=FALSE, message=FALSE}
+na_df <- create_df_for_NAS_map(c("WA"))       # These two functions will be examined later
+p <- draw_county_map("WA","adams",na_df)      
+print(p)
+```
+
+#### Example: King County
+Here is what King County, WA looks like, showing the order for drawing the points. The first point, 1, has been overwritten by the last point, 66. (Placing labels - the numbers are a kind of label - to avoid overlap and to be neat and tidy is a difficult computational problem.)
+
+```{r echo=FALSE, message=FALSE}
+p <- draw_county_map("WA","King",na_df,show_nums=TRUE)
+print(p)
+```
+
+### Connecting the Natural Amenity Scale to the Mapping Data: How do we do that? 
+Look at the tables above. We don't seem to have a computational way to join the **natural_amenity** table with the **map** table. The **natural_amenity** table includes FIPS.Code, State ("WA"), and County ("KING"). But, the **map** table includes region ("washington") and sub-region("king") and no FIPS.code. We need to bring these two tables together, somehow, so that the Amentity.Scale.Rank is in the same table as the mapping data.
+
+We need, in short, a way to bridge the two tables. Here is such a bridging table. (I found it by doing a google search on "state name state code csv file" Credit: [World Population Review](http://worldpopulationreview.com/states/state-abbreviations/)). 
+
+```{r echo=FALSE, message=FALSE}
+df <- create_state_name_code_df()
+head(df,55)
+```
+
+The State column has the same data as the region column in the **map** table and the Code column has the same data as the State column in the **natural_amenity** table. Accordingly, we'll use this bridging table to join the **natural_amenity** and the **mapping** tables together. 
+
+This new table, shown next, has the Natural Amenity Rank and the mapping data in the same table. Our data wrangling is done! (dyplr was used for all of this work.)
+
+```{r echo=FALSE, message=FALSE}
+head(na_df,20)
+```
+
+### Data Visualization: The Natural Amenity Data Set: On Maps
+
+We can now create a data table of all counties in Washington State. Then, we draw all the polygons for the counties (one polygon per county) and fill them in with a color, one color for each of the rankings. (All of the following visualizations are done with ggplot2.)
+
+```{r echo=FALSE, message=FALSE}
+na_df <- create_df_for_NAS_map(c("WA"))
+p <- create_viz_with_continuous_scale(na_df)
+print(p)
+```
+
+We can do the same thing for Washington, Oregon, and California. Changing the scale from a "continuous" scale, which is computed automatically, to a "discrete" scale, which is hand-crafted, is fairly straightforward. (Credit for color gradiant: [Color Brewer](http://colorbrewer2.org/).)
+
+```{r echo=FALSE, message=FALSE}
+na_df <- create_df_for_NAS_map(c("Washington", "Oregon", "California"))
+color_list <- get_7green_colors();
+p <- create_viz_with_discrete_scale(na_df,color_list)
+print(p)
+```
+
+We can do the same thing for all the counties in the US. (A note: There are about 3,000 counties in the US. In total about 85,000 points go into creating the polygons for the map below.)
+
+```{r echo=FALSE, message=FALSE}
+na_df <- create_df_for_NAS_map(c("."))
+p <- create_viz_with_continuous_scale(na_df)
+print(p)
+```
+
+### The Code
+About 30-40 lines of R code was written to wrangle the data (dplyr) and draw these maps (ggplot2). A few more lines of code were written to experiment with different ways of visualizating the maps. 
+
+#### Directory organization
+The code is organized as follows: 
+```
+nas/                                        # The working directory
+nas/main.R                                  # An R source file for trying things out
+nas/project_summary.Rmd                     # This report, an R markdown file 
+nas/qplot_examples.Rmd                      # A report for using qplot() to answer questions
+
+nas/source                                  # The source directory
+nas/source/data_wrangling.R                 # Functions for data wrangling
+nas/source/viz.R                            # Functions for drawng the maps
+
+nas/data                                    # Data files go here
+nas/data/natural-amenity-simplified.csv     # Table: natural_amenity: Contains ranking
+nas/data/state_names_to_codes.cvs           # Briding table 
+
+nas/docs                                    # The output of this Rmd file 
+nas/docs/project_summary.html               # Report on mapping the NAS ranks
+nas/docs/qplot_examples.html                # Examples of using qplot()
+
+```
+The source code - main.R, data_wrangling.R, and viz.R - are now presented. 
+
+#### main.R
+``````{r, eval=FALSE, code=readLines("./main.R")}
+```
+
+#### data_wrangling.R 
+``````{r, eval=FALSE, code=readLines("./source/data_wrangling.R")}
+```
+
+#### viz.R 
+```{r, eval=FALSE, code=readLines("./source/viz.R")}
+```
+
+## Appendix: Notes on the Natural Amenity Scale and Data Set
+```{r}
+# NOTES ON Natural Amenities Scale and Data Set 
+#
+# Natural Amenities Scale							
+# 
+# The Climatic data is from the Area Resource File (ARF). The ARF file is maintained by 							
+# Quality Resource Systems (QRS) under contract to the Office of Research and Planning, Bureau of							
+# Health Professions, within the Health Resources and Services Administration.  For more information							
+# see http://www.arfsys.com .							
+# 
+# The topography scale is from The National Atlas of the United States of America							
+# U.S. Department of Interior, U.S. Geological Survey, Washington, DC., 1970.							
+# 
+# Land Surface Form Topography codes:							
+#   
+# Plains			
+# 1 = Flat plains			   
+# 2 = Smooth plains		
+# 3 = Irregular plains, slight relief			
+# 4 = Irregular plains
+#
+# Tablelands
+# 5 = Tablelands, moderate relief			
+# 6 = Tablelands, considerable relief			
+# 7 = Tablelands, high relief			
+# 8 = Tablelands, very high relief			
+#
+# Plains with Hills or Mountains
+# 9 = Plains with hills	
+# 10 = Plains with high hills	
+# 11 = Plains with low mountains	
+# 12 = Plains with high mountains	
+#
+# Open Hills and Mountains						
+# 13 = Open low hills							
+# 14 = Open hills						
+# 15 = Open high hills						
+# 16 = Open low mountains					
+# 17 = Open high mountains							
+# 
+# Hills and Mountains	
+# 18 = Hills
+# 19 = High hills
+# 20 = Low mountains	
+# 21 = High mountains	
+#
+# 1993 Rural-urban contiuum code (Also known as the"Beale code")							
+# 
+# Metro counties:							
+#   
+# 0  Central counties of metro areas of 1 million population or more							
+# 1  Fringe counties of metro areas of 1 million population or more							
+# 2  Counties in metro areas of 250,000 to 1 million population							
+# 3  Counties in metro areas of fewer than 250,000 population							
+# 
+# Nonmetro counties:							
+#   
+# 4  Urban population of 20,000 or more, adjacent to a metro area							
+# 5  Urban population of 20,000 or more, not adjacent to a metro area							
+# 6  Urban population of 2,500 to 19,999, adjacent to a metro area							
+# 7  Urban population of 2,500 to 19,999, not adjecent to a metro area							
+# 8  Completely rural or fewer than 2,500 urban population, adjacent to a							
+# metro area							
+# 9  Completely rural or fewer than 2,500 urban population, not adjacent							
+# to a metro area							
+# 
+# Source:  http://www.ers.usda.gov/briefing/rurality/ruralurbcon/							
+#   
+#   1993 Urban infuence code							
+# 
+# Metro counties:							
+#   
+# 1   Large - Central and fringe counties of metro areas of 1 million							
+# population or more 							
+# 2   Small - Counties in metro areas of fewer than 1 million population							
+# 
+# Nonmetro counties:							
+#   
+# 3   Adjacent to a large metro area with a city of 10,000 or more							
+# 4   Adjacent to a large metro area without a city of at least 10,000							
+# 5   Adjacent to a small metro area with a city of 10,000 or more							
+# 6   Adjacent to a small metro area without a city of at least 10,000							
+# 7   Not adjacent to a metro area and with a city of 10,000 or more							
+# 8   Not adjacent to a metro area and with a city of 2,500 to 9,999 population 							
+# 9   Not adjacent to a metro area and with no city or a city with a population							
+#     less than 2,500							
+# 
+# Source:  http://www.ers.usda.gov/briefing/rurality/urbaninf/							
+#   
+# Census Divisions							
+# 
+# 1 = New England							
+# 2 = Middle Atlantic							
+# 3 = East  North Central							
+# 4 = West North Central							
+# 5 = South Atlantic							
+# 6 = East South Central							
+# 7 = West South Central							
+# 8 = Mountain							
+# 9 = Pacific							
+# 
+# Amenity Rank (See map in publication)							
+# 
+# Deviations from the mean							
+# 1 = Over -2 (Low)							
+# 2 = -1 to -2							
+# 3 = 0 to -1							
+# 4 = 0 to 1							
+# 5 = 1 to 2							
+# 6 = 2 to 3 							
+# 7 = Over 3 (High)							
+# 
+# Notes:  The file consists of an amenity code for all of the counties in the lower 48 states.							
+# In some cases where the data was not available, estimates were used from a 							
+# combined adjacent county.  There are 41 combined counties in this file.  Most of							
+# of these combination were the independent cities in Virginia. There  were also county							
+# combinations in Arizona, Montana, and New Mexico.							
+# 
+# For more information on the natural amenity index, contact David McGranahan, DMcG@ers.usda.gov, (202) 694-5356.							
+
+```

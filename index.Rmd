@@ -11,5 +11,5 @@ knitr::opts_chunk$set(echo = TRUE)
 The goal of this project is to explore the [Natural Amenity Scale](https://www.ers.usda.gov/data-products/natural-amenities-scale/). 
 
 #### Working reports
-* [Maps](./docs/project_summary.html)
-* [qplot() examples](./docs/qplot_examples.html)
+* [Maps](./project_summary.html)
+* [qplot() examples](./qplot_examples.html)

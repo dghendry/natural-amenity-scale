@@ -8,5 +8,5 @@ University of Washington
 
 David Hendry
 
-See [Report list](https://dghendry.github.io/natural-amenity-scale/docs).
+See [Report list](https://dghendry.github.io/natural-amenity-scale/docs/index.html).
  

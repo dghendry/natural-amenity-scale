@@ -1,8 +1,8 @@
 ---
 title: 'Natural Amenity Scale: Project Report'
 output:
-  html_document:
-    df_print: paged
+  html_document: 
+    df_print: kable
   pdf_document: default
   word_document: default
 ---
@@ -84,19 +84,19 @@ print(p)
 ### Connecting the Natural Amenity Scale to the Mapping Data: How do we do that? 
 Look at the tables above. We don't seem to have a computational way to join the **natural_amenity** table with the **map** table. The **natural_amenity** table includes FIPS.Code, State ("WA"), and County ("KING"). But, the **map** table includes region ("washington") and sub-region("king") and no FIPS.code. We need to bring these two tables together, somehow, so that the Amentity.Scale.Rank is in the same table as the mapping data.
 
-We need, in short, a way to bridge the two tables. Here is such a bridging table. (I found it by doing a google search on "state name state code csv file" Credit: [World Population Review](http://worldpopulationreview.com/states/state-abbreviations/)). 
+We need, in short, a way to bridge the two tables. Here is such a bridging table. Only the first few records are shown. (I found it by doing a google search on "state name state code csv file" Credit: [World Population Review](http://worldpopulationreview.com/states/state-abbreviations/)). 
 
 ```{r echo=FALSE, message=FALSE}
 df <- create_state_name_code_df()
-head(df,55)
+head(df,5)
 ```
 
 The State column has the same data as the region column in the **map** table and the Code column has the same data as the State column in the **natural_amenity** table. Accordingly, we'll use this bridging table to join the **natural_amenity** and the **mapping** tables together. 
 
-This new table, shown next, has the Natural Amenity Rank and the mapping data in the same table. Our data wrangling is done! (dyplr was used for all of this work.)
+This new table, shown next, has the Natural Amenity Rank and the mapping data in the same table. Just the first few records are shown. Our data wrangling is done! (dyplr was used for all of this work.)
 
 ```{r echo=FALSE, message=FALSE}
-head(na_df,20)
+head(na_df,5)
 ```
 
 ### Data Visualization: The Natural Amenity Data Set: On Maps
@@ -118,7 +118,7 @@ p <- create_viz_with_discrete_scale(na_df,color_list)
 print(p)
 ```
 
-We can do the same thing for all the counties in the US. (A note: There are about 3,000 counties in the US. In total about 85,000 points go into creating the polygons for the map below.)
+We can do the same thing for all the counties in the US. Notes: (1) There are about 3,000 counties in the US. In total about 85,000 points go into creating the polygons for the map below. (2) Somehow during the rendering process in Rmd the map has become distorted - that needs to be corrected. (3) What do the grey counties mean?  Yes, data is missing or there is a bug in the data wrangling or data visualization code. There may be several reasons. More work would need to be carried out to get to the bottom of it.
 
 ```{r echo=FALSE, message=FALSE}
 na_df <- create_df_for_NAS_map(c("."))
@@ -136,6 +136,8 @@ nas/                                        # The working directory
 nas/main.R                                  # An R source file for trying things out
 nas/project_summary.Rmd                     # This report, an R markdown file 
 nas/qplot_examples.Rmd                      # A report for using qplot() to answer questions
+nas/index.Rmd                               # The front-door to the reports 
+nas/index.html                              # As an HTML file for web publishing
 
 nas/source                                  # The source directory
 nas/source/data_wrangling.R                 # Functions for data wrangling

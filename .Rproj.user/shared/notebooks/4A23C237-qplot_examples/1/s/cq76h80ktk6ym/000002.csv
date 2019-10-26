@@ -1,2 +1,0 @@
-"0","p <- qplot(data=df, x=Natural.Amenity.Rank)"
-"0","print(p)"

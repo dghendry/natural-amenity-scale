@@ -1,0 +1,15 @@
+---
+title: 'Natural Amenities Scale: Front Door'
+author: "David Hendry"
+date: "10/26/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+The goal of this project is to explore the [Natural Amenity Scale](https://www.ers.usda.gov/data-products/natural-amenities-scale/). 
+
+#### Working reports
+* [Maps](./docs/project_summary.html)
+* [qplot() examples](./docs/qplot_examples.html)

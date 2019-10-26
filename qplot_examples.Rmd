@@ -48,23 +48,11 @@ print(p)
 
 ### Question: How are July and January Mean Temperatures Related?
 
-We can answer this question with a scatterplot. Here's the code:
-
-```{r message=FALSE}
-p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=Natural.Amenity.Rank)
-p <- p + labs(title="Natural Amenity Scale", 
-     x = "Mean Temperature in January (Farienheit)", 
-     y = "Mean Temperature in July (Farienheit)")
-print(p)
-```
-
-### Question: Can we Discern Trends in this Data
-
-This code can be used to create trend lines. Are there trends? 
+We can answer this question with a scatterplot.
 
 ```{r echo=FALSE, message=FALSE}
-p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=factor(Natural.Amenity.Rank), alpha=0.25, geom=c("point", "smooth"))
-p <- p + labs(title="Natural Amenity Scale", 
+p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=Natural.Amenity.Rank)
+p <- p + labs(title="Natural Amenity Scale: Relationship between Mean Temperatures in January and July", 
      x = "Mean Temperature in January (Farienheit)", 
      y = "Mean Temperature in July (Farienheit)")
 print(p)
@@ -72,9 +60,31 @@ print(p)
 
 Here is the code:
 
-```{r eval= FALSE, echo=FALSE, message=FALSE}
+```{r eval= FALSE, echo=TRUE, message=FALSE}
+p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=Natural.Amenity.Rank)
+p <- p + labs(title="Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July", 
+     x = "Mean Temperature in January (Farienheit)", 
+     y = "Mean Temperature in July (Farienheit)")
+print(p)
+```
+
+### Question: Can we Discern Trends in this Data
+
+We can try to find trends for each of the rankings. Are there trends? 
+
+```{r echo=FALSE, message=FALSE}
 p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=factor(Natural.Amenity.Rank), alpha=0.25, geom=c("point", "smooth"))
-p <- p + labs(title="Natural Amenity Scale", 
+p <- p + labs(title="Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July: Seeking Trends", 
+     x = "Mean Temperature in January (Farienheit)", 
+     y = "Mean Temperature in July (Farienheit)")
+print(p)
+```
+
+Here is the code. qplot() creates a new layer for each of the rankings.
+
+```{r eval= FALSE, echo=TRUE, message=FALSE}
+p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=factor(Natural.Amenity.Rank), alpha=0.25, geom=c("point", "smooth"))
+p <- p + labs(title="Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July: Seeking Trends", 
      x = "Mean Temperature in January (Farienheit)", 
      y = "Mean Temperature in July (Farienheit)")
 print(p)
@@ -82,4 +92,4 @@ print(p)
 
 ### Summary
 
-qplot() is extremely effective for drawing standard charts. See the [reference guide](https://ggplot2.tidyverse.org/reference/qplot.html#arguments).
+qplot() is extremely effective for drawing standard charts.  qplot() is implemented by calling the ggplot2 functions. See Chapter 16 of Freedman & Ross (2019). See the [reference guide](https://ggplot2.tidyverse.org/reference/qplot.html#arguments) for all the many intricate and wonderful details associated with using qplot().

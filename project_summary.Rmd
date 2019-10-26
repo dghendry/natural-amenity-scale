@@ -21,7 +21,7 @@ wa_map_info_df <- get_map_data_for_county("WA")
 ```
 The goal of this report is to summarize work on presenting the [Natural Amenity Scale](https://www.ers.usda.gov/data-products/natural-amenities-scale/). 
 
-Recall the Natural Amenity Scale, ranging from 1 (low) to 7 (high), is a measure of the "beauty" of region. All counties in the USA have been assigned a rank on this 7-point scale.
+Recall the Natural Amenity Scale, ranging from 1 (low) to 7 (high), is a measure of the "beauty" of a region. All counties in the USA have been assigned a rank on this 7-point scale.
 
 ### Data Wrangling: The Natural Amenity Data Set
 Recall that the data is arranged in a table. Here are the headings and the first few oberviations. We'll call this the **natural_amenity** table.
@@ -84,7 +84,7 @@ print(p)
 ### Connecting the Natural Amenity Scale to the Mapping Data: How do we do that? 
 Look at the tables above. We don't seem to have a computational way to join the **natural_amenity** table with the **map** table. The **natural_amenity** table includes FIPS.Code, State ("WA"), and County ("KING"). But, the **map** table includes region ("washington") and sub-region("king") and no FIPS.code. We need to bring these two tables together, somehow, so that the Amentity.Scale.Rank is in the same table as the mapping data.
 
-We need, in short, a way to bridge the two tables. Here is such a bridging table. Only the first few records are shown. (I found it by doing a google search on "state name state code csv file" Credit: [World Population Review](http://worldpopulationreview.com/states/state-abbreviations/)). 
+We need, in short, a way to bridge the two tables. Here is such a bridging table. Only the first few records are shown. (I found it by doing a google search on "state name state code csv file". Credit: [World Population Review](http://worldpopulationreview.com/states/state-abbreviations/)). 
 
 ```{r echo=FALSE, message=FALSE}
 df <- create_state_name_code_df()
@@ -118,7 +118,7 @@ p <- create_viz_with_discrete_scale(na_df,color_list)
 print(p)
 ```
 
-We can do the same thing for all the counties in the US. Notes: (1) There are about 3,000 counties in the US. In total about 85,000 points go into creating the polygons for the map below. (2) Somehow during the rendering process in Rmd the map has become distorted - that needs to be corrected. (3) What do the grey counties mean?  Yes, data is missing or there is a bug in the data wrangling or data visualization code. There may be several reasons. More work would need to be carried out to get to the bottom of it.
+We can do the same thing for all the counties in the US. Notes: (1) There are about 3,000 counties in the US. In total about 85,000 points go into creating the polygons for the map below. (2) Somehow during the rendering process of the R Notebook, the map has become distorted (also seen in the above map). This disortation needs to be corrected. (3) What do the grey counties mean?  Yes, data is missing or there is a bug in the data wrangling or data visualization code. There may be several reasons. More work is needed to identify and correct the problem.
 
 ```{r echo=FALSE, message=FALSE}
 na_df <- create_df_for_NAS_map(c("."))

@@ -3,7 +3,6 @@
 # This code is used to present the Natural
 # Amenity Scale for counties in the US.
 #----------------------------------------------
-library(ggplot2)
 # Set your working directory
 setwd("~/Documents/__INFO-201/12code/nas")
 
@@ -15,11 +14,11 @@ source("./source/viz.R")
 # Specify the states to be visualized. All
 # counties in these states.
 #----------------------------------------------
-#state_names = c("washington", "oregon", "California", "New York")
+state_names = c("washington", "oregon", "California", "New York")
 #state_names = c("washington")
 
 # All counties, in all states, in the US
-state_names = c(".")
+#state_names = c(".")
 
 #----------------------------------------------
 # Get the data frame to be vizualized - all 
@@ -28,7 +27,7 @@ state_names = c(".")
 na_df <- create_df_for_NAS_map(state_names)
 
 #----------------------------------------------
-# Example visualizations
+# Example visualizations with ggplot()
 #----------------------------------------------
 # Create a vizualization with a conintuous color scale
 p <- create_viz_with_continuous_scale(na_df)
@@ -60,4 +59,15 @@ print(p)
 p <- draw_county_map("WA","adams",na_df, TRUE)
 print(p)
 
+#----------------------------------------------
+# Interactive visualizations with ggplotly()
+#----------------------------------------------
+p <- create_viz_with_continuous_scale(na_df)
+p <- ggplotly(p,tooltip="text")
+print(p)
+
+# Get get the county plot -- show points 
+p <- draw_county_map("WA","adams",na_df)
+p <- ggplotly(p,tooltip="label")
+print(p)
 

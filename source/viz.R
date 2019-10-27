@@ -4,8 +4,12 @@
 #----------------------------------------------
 
 # install.packages("ggplot2")
+# install.packages("plotly")
+# install.packages("stringr")
 library(ggplot2)
+library(plotly)
 library(stringr)
+
 
 #----------------------------------------------
 # Returns 7 colors to be used in a discrete scale
@@ -57,17 +61,23 @@ draw_county_map <- function(state_code, county_name, map_df, show_nums = FALSE) 
     state_code,
     " (No. Points: ", no_points, ")"
   )
+  
+  tooltip = paste0("(",county_polygon_df$lat,",",county_polygon_df$long,")")
+
 
   # Create the plot with one geometic object (a layer)
   p <- ggplot(
     county_polygon_df,
-    aes(x = lat, y = long, label = seq(from = 1, to = no_points))
+    aes(x = lat, 
+        y = long, 
+        label = seq(from = 1, to = no_points))
   ) +
     geom_polygon(fill = "grey75", color = "black", linetype = "dotted") +
     labs(title = county_title)
-
+  
   # Add a second geometic object (either a point or a label)
   if (show_nums == FALSE) {
+  #p <- p + geom_point(aes(text = tooltip), color = "red")
     p <- p + geom_point(color = "red")
   }
   else {
@@ -83,7 +93,7 @@ draw_county_map <- function(state_code, county_name, map_df, show_nums = FALSE) 
 create_viz_with_continuous_scale <- function(na_df) {
   na_df$Natural.Amenity.Rank <- as.numeric(na_df$Natural.Amenity.Rank)
 
-  p <- ggplot(na_df, aes(long, lat)) +
+  p <- ggplot(na_df, aes(long, lat, text=County)) +
     xlab("lat") +
     ylab("long")
 
@@ -123,3 +133,4 @@ create_viz_with_discrete_scale <- function(na_df, color_list) {
   p <- p + scale_fill_manual(limits = c("1", "2","3","4","5","6","7"), values = color_list)
   return(p)
 }
+

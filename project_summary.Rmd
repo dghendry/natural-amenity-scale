@@ -120,11 +120,22 @@ print(p)
 
 We can do the same thing for all the counties in the US. Notes: (1) There are about 3,000 counties in the US. In total about 85,000 points go into creating the polygons for the map below. (2) Somehow during the rendering process of the R Notebook, the map has become distorted (also seen in the above map). This disortation needs to be corrected. (3) What do the grey counties mean?  Yes, data is missing or there is a bug in the data wrangling or data visualization code. There may be several reasons. More work is needed to identify and correct the problem.
 
-```{r echo=FALSE, message=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 na_df <- create_df_for_NAS_map(c("."))
 p <- create_viz_with_continuous_scale(na_df)
 print(p)
 ```
+
+```{r eval=TRUE, echo=TRUE, message=TRUE, warning=TRUE}
+#na_df <- create_df_for_NAS_map(c("washington"))
+#p <- create_viz_with_continuous_scale(na_df)
+#p <- ggplotly(p,tooltip="text")
+#print(p)
+```
+
+
+
+
 
 ### The Code
 About 30-40 lines of R code was written to wrangle the data (dplyr) and draw these maps (ggplot2). A few more lines of code were written to experiment with different ways of visualizating the maps. 

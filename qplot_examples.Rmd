@@ -38,11 +38,24 @@ qplot(data=df, x=Natural.Amenity.Rank)
 We can add titles and labels to the graph, with this code.
 
 ```{r message=FALSE}
+# Get the data frame
+df <- create_natural_amenity_scale_df()
+
+# Create a title (include number of observations, N)
 num <- nrow(df)
-t <- paste0("Distribution of Natural Amenity Scale Rankings (N=",num,").")
-p <- p + labs(title=t, 
-     x = "Rank (1-low, 7-high)", 
-     y = "Frequency")
+t <- paste0("Distribution of Natural Amenity Scale Rankings (N=", num, ").")
+
+# Create the plot (one variable, descrete scale)
+p <- qplot(data = df, x = Natural.Amenity.Rank)
+
+# Add the labels (title, x-axis, y-axis)
+p <- p + labs(
+  title = t,
+  x = "Rank (1-low, 7-high)",
+  y = "Frequency"
+)
+
+# Show the plot
 print(p)
 ```
 
@@ -51,20 +64,25 @@ print(p)
 We can answer this question with a scatterplot.
 
 ```{r echo=FALSE, message=FALSE}
-p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=Natural.Amenity.Rank)
-p <- p + labs(title="Natural Amenity Scale: Relationship between Mean Temperatures in January and July", 
-     x = "Mean Temperature in January (Farienheit)", 
-     y = "Mean Temperature in July (Farienheit)")
+p <- qplot(data = df, x = Mean.Temp.Jan, y = Mean.Temp.July, color = Natural.Amenity.Rank)
+p <- p + labs(
+  title = "Natural Amenity Scale: Relationship between Mean Temperatures in January and July",
+  x = "Mean Temperature in January (Farienheit)",
+  y = "Mean Temperature in July (Farienheit)"
+)
 print(p)
 ```
 
 Here is the code:
 
 ```{r eval= FALSE, echo=TRUE, message=FALSE}
-p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=Natural.Amenity.Rank)
-p <- p + labs(title="Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July", 
-     x = "Mean Temperature in January (Farienheit)", 
-     y = "Mean Temperature in July (Farienheit)")
+# x and y values - continuous scale - scatterplot
+p <- qplot(data = df, x = Mean.Temp.Jan, y = Mean.Temp.July, color = Natural.Amenity.Rank)
+p <- p + labs(
+  title = "Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July",
+  x = "Mean Temperature in January (Farienheit)",
+  y = "Mean Temperature in July (Farienheit)"
+)
 print(p)
 ```
 
@@ -73,20 +91,33 @@ print(p)
 We can try to find trends for each of the rankings. Are there trends? 
 
 ```{r echo=FALSE, message=FALSE}
-p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=factor(Natural.Amenity.Rank), alpha=0.25, geom=c("point", "smooth"))
-p <- p + labs(title="Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July: Seeking Trends", 
-     x = "Mean Temperature in January (Farienheit)", 
-     y = "Mean Temperature in July (Farienheit)")
+p <- qplot(data = df, x = Mean.Temp.Jan, y = Mean.Temp.July, color = factor(Natural.Amenity.Rank), alpha = 0.25, geom = c("point", "smooth"))
+p <- p + labs(
+  title = "Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July: Seeking Trends",
+  x = "Mean Temperature in January (Farienheit)",
+  y = "Mean Temperature in July (Farienheit)"
+)
 print(p)
 ```
 
 Here is the code. qplot() creates a new layer for each of the rankings.
 
 ```{r eval= FALSE, echo=TRUE, message=FALSE}
-p <- qplot(data=df, x=Mean.Temp.Jan, y=Mean.Temp.July, color=factor(Natural.Amenity.Rank), alpha=0.25, geom=c("point", "smooth"))
-p <- p + labs(title="Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July: Seeking Trends", 
-     x = "Mean Temperature in January (Farienheit)", 
-     y = "Mean Temperature in July (Farienheit)")
+p <- qplot(
+  data = df,
+  x = Mean.Temp.Jan,
+  y = Mean.Temp.July,
+  color = factor(Natural.Amenity.Rank),
+  alpha = 0.25,
+  geom = c("point", "smooth")
+)
+
+p <- p + labs(
+  title = "Natural Amenity Scale: Relationship between Mean Temperatures \nin January and July: Seeking Trends",
+  x = "Mean Temperature in January (Farienheit)",
+  y = "Mean Temperature in July (Farienheit)"
+)
+
 print(p)
 ```
 
